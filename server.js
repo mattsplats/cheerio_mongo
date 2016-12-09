@@ -13,14 +13,13 @@ const express    = require('express'),
       // Local dependencies
       Note       = require('./models/Note.js'),
       Article    = require('./models/Article.js'),
-      localVars  = require('./local.json'),
+      localVars  = require('./mongodb_uri.json'),
 
       // Const vars
       app    = express(),
       hbs    = exphbs.create({ defaultLayout: 'main', extname: '.hbs' }),
       PORT   = process.env.PORT || 3000,
-      DB_URI = process.env.MONGODB_URI || localVars.LOCAL_URI,
-      mongoose.Promise = Promise;
+      DB_URI = process.env.MONGODB_URI || localVars.LOCAL_URI;
 
 // Handlebars init
 app.engine('.hbs', hbs.engine);
@@ -40,6 +39,7 @@ app.use(bodyParser.text());
 app.use(express.static(process.cwd() + '/public'));
 
 // Mongoose init
+mongoose.Promise = Promise;
 mongoose.connect(DB_URI);
 const db = mongoose.connection;
 
@@ -54,7 +54,7 @@ db.once('open', function () {
 
 
 // Main route
-app.use('/', routes);
+// app.use('/', routes);
 
 
 

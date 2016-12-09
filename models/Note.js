@@ -3,7 +3,7 @@
 const mongoose = require("mongoose"),
       Schema   = mongoose.Schema;
 
-const ArticleSchema = new Schema({
+const NoteSchema = new Schema({
   title: {
     type: String
   },
@@ -12,4 +12,4 @@ const ArticleSchema = new Schema({
   }
 });
 
-module.exports = mongoose.model("Article", ArticleSchema);
+module.exports = mongoose.model("Note", NoteSchema);
