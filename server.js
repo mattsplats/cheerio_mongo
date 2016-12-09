@@ -53,8 +53,33 @@ db.once('open', function () {
 
 
 
-// Main route
-// app.use('/', routes);
+// Routes
+app.get('/', (req, res) => {
+  rp('https://news.ycombinator.com/').then(html => {
+    const $      = cheerio.load(html),
+          links  = [],
+          result = [];
+
+    $("td.title").each(function(i, element) {
+      const link = $(element).find("a").attr("href");
+      if (link) links.push({ link: link });
+    });
+
+    for (let i = 0; i < 10; i++) result.push(links[i]);
+
+    Note.find({}).then(comments => {
+      res.render('index', {result: result, comments: comments});
+    });
+  });
+});
+
+app.post('/', (req, res) =>
+  Note.create({comment: req.body.comment}).then(comment => res.json(comment))
+);
+
+app.delete('/', (req, res) => 
+  Note.remove({}).then(data => res.json(data))
+);
 
 
 

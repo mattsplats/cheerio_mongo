@@ -4,10 +4,10 @@ const mongoose = require("mongoose"),
       Schema   = mongoose.Schema;
 
 const NoteSchema = new Schema({
-  title: {
+  /*title: {
     type: String
-  },
-  body: {
+  },*/
+  comment: {
     type: String
   }
 });
