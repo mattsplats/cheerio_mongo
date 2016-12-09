@@ -56,19 +56,32 @@ db.once('open', function () {
 // Routes
 app.get('/', (req, res) => {
   rp('https://news.ycombinator.com/').then(html => {
-    const $      = cheerio.load(html),
-          links  = [],
-          result = [];
+    const $            = cheerio.load(html),
+          date = new Date().toISOString(),
+          promiseChain = [];
 
     $("td.title").each(function(i, element) {
       const link = $(element).find("a").attr("href");
-      if (link) links.push({ link: link });
+      
+      if (link) {
+        promiseChain.push(new Promise((resolve, reject) => {
+          Article.update(
+            { link: link },   // where link exists,
+            { $set:           // replace fields
+              {
+                title: 'Test',
+                link: link,
+                date: date
+              }                 
+            },
+            { upsert: true }
+          ).then(article => resolve(article));
+        }));
+      };
     });
 
-    for (let i = 0; i < 10; i++) result.push(links[i]);
-
     Note.find({}).then(comments => {
-      res.render('index', {result: result, comments: comments});
+      Promise.all(promiseChain).then(articles => res.render('index', {articles: articles, comments: comments}));
     });
   });
 });
