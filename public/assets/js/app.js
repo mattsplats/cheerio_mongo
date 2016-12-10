@@ -15,6 +15,7 @@ $(function () {
 
     $.get(`/comments/${id}`).done(data => {
       $('#title').text(articles[currArticle].title);
+      $('#summary').text(articles[currArticle].summary);
       $('#link').attr('href', articles[currArticle].link);
       $('#comments').html(data.map(e => `${e.comment}<br/>`).join(''));
     });

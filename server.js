@@ -55,24 +55,24 @@ db.once('open', function () {
 
 // Render main site index
 app.get('/', (req, res) => {
-  rp('https://news.ycombinator.com/').then(html => {
+  rp('http://www.nytimes.com/pages/todayspaper').then(html => {
     const $ = cheerio.load(html),
           promises = [];
 
-    // Iterate through in reverse order
-    $($('td.title').get().reverse()).each(function(i, element) {
-      const title = $(element).find('a').text(),
-            link = $(element).find('a').attr('href');
-      
-      if (link) {
-        // Push new promise to promises
-        promises.push(new Promise((resolve, reject) => {
+    $('h3').each(function(i, element) {
+      const link    = $(element).find('a').attr('href'),
+            title   = $(element).find('a').text().trim(),
+            summary = $(element).next().next().text().trim();
+
+      if (title) {
+        promises.unshift(new Promise((resolve, reject) => {
           Article.update(
-            { link: link },   // if link exists,
-            { $setOnInsert:   // do not replace fields
+            { link: link },   // only create new entry if link does not exist in Articles
+            { $setOnInsert:
               {
+                link: link,
                 title: title,
-                link: link
+                summary: summary
               }                 
             },
             {
@@ -83,7 +83,7 @@ app.get('/', (req, res) => {
             resolve(article)
           );
         }));
-      };
+      }
     });
 
     // When all updates are resolved, continue

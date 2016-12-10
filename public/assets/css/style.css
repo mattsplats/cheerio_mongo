@@ -1,19 +1,11 @@
 body {
-	/* http://lea.verou.me/css3patterns/#blueprint-grid */
-	background-color: #BBDDF5;
-	background-image: linear-gradient(white 2px, transparent 2px),
-		linear-gradient(90deg, white 2px, transparent 2px),
-		linear-gradient(rgba(255,255,255,.3) 1px, transparent 1px),
-		linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px);
-	background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
-	background-position: -2px -2px, -2px -2px, -1px -1px, -1px -1px;
-
-	font-family: 'Raleway', sans-serif;
-	font-size: 200%;
+	background: url(/assets/img/fba7da61.png);
+	font-family: 'Lora', serif;
+	font-size: 150%;
 }
 
 body, h1, h2 {
-	font-weight: 800;
+	font-weight: 600;
 }
 
 select {
