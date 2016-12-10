@@ -9,12 +9,18 @@
 
 		<div class="col-md-8">
 			<div class="text-center">
-				<h2>Links:</h2>
+				<h2>Article:</h2>
 			</div>
 
-			<ul id="list" class="list-group">
-				<a href={{article.link}}>Link!</a><br/>
-			</ul>
+			<br/><br/>
+			<p id="title">{{article.title}}</p>
+			<a id="link" href={{article.link}}>More info ...</a>
+			<br/><br/>
+
+			<div>
+				<button class="btn btn-default" type="button" id="prev_article">Prev</button>
+				<button class="btn btn-default" type="button" id="next_article">Next</button>
+			</div>
 		</div> <!-- End col -->
 
 		<div class="col-md-4 min-height-200">
@@ -26,7 +32,7 @@
 				{{comment}}<br/>
 			{{/each}}
 			</div>
-			<button class="btn btn-danger" type="button" id="delete">Delete</button>
+			<button class="btn btn-danger" type="button" id="delete_comments">Delete</button>
 		</div>
 
 		<div class="col-md-4 min-height-200">
@@ -34,7 +40,7 @@
 				<h2>Add comment:</h2>
 			</div>
 			<input type="text" class="form-control" id="new_comment" maxlength="30">
-			<button class="btn btn-success" type="button" id="add">Add</button>
+			<button class="btn btn-success" type="button" id="add_comment">Add</button>
 		</div>
 
 	</div> <!-- End row -->

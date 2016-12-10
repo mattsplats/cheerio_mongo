@@ -4,12 +4,9 @@ const mongoose = require("mongoose"),
       Schema   = mongoose.Schema;
 
 const CommentSchema = new Schema({
-  /*title: {
-    type: String
-  },*/
   comment: {
     type: String
-  }
+  },
 });
 
 module.exports = mongoose.model("Comment", CommentSchema);

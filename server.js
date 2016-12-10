@@ -53,14 +53,16 @@ db.once('open', function () {
 
 
 
-// Routes
+// Render main site index
 app.get('/', (req, res) => {
   rp('https://news.ycombinator.com/').then(html => {
     const $ = cheerio.load(html),
           promises = [];
 
-    $("td.title").each(function(i, element) {
-      const link = $(element).find("a").attr("href");
+    // Iterate through in reverse order
+    $($('td.title').get().reverse()).each(function(i, element) {
+      const title = $(element).find('a').text(),
+            link = $(element).find('a').attr('href');
       
       if (link) {
         // Push new promise to promises
@@ -69,7 +71,7 @@ app.get('/', (req, res) => {
             { link: link },   // if link exists,
             { $setOnInsert:   // do not replace fields
               {
-                title: 'Test',
+                title: title,
                 link: link
               }                 
             },
@@ -86,19 +88,32 @@ app.get('/', (req, res) => {
 
     // When all updates are resolved, continue
     Promise.all(promises).then(() => 
-      Article.find({}).populate('comments').exec((err, docs) => {
-        console.log(docs[0]);
-        res.render('index', {article: docs[0]})
-      })
+      Article.find({}).sort({ date: 1 }).limit(1).populate('comments').exec((err, doc) => 
+        res.render('index', {article: doc[0]})
+      )
     );
   });
+});
+
+
+// Additional routes
+app.get('/articles', (req, res) => {
+  Article.find({}).sort({ date: 1 }).limit(10).populate('comments').exec((err, docs) => 
+    res.json(docs)
+  )
+});
+
+app.get('/comments/:id', (req, res) => {
+  Article.findById(req.params.id).populate('comments').exec((err, doc) => 
+    res.json(doc.comments)
+  )
 });
 
 app.post('/', (req, res) => {
   Comment.create({comment: req.body.comment}).then(comment => {
     console.log(comment);
-    Article.findOneAndUpdate(
-      { _id: '584b472d96b3a0f2f41cd440' },
+    Article.findByIdAndUpdate(
+      req.body.id,
       { $push: { "comments": comment._id } }
     ).then(() => 
       res.json(comment)
@@ -106,9 +121,22 @@ app.post('/', (req, res) => {
   })
 });
 
-app.delete('/', (req, res) => 
-  Comment.remove({}).then(data => res.json(data))
-);
+app.delete('/', (req, res) => {
+  Article.findById(req.body.id).then(article => {
+    const promises = [];
+
+    for (const id of article.comments) {
+      promises.push(new Promise((resolve, reject) => {
+        Comment.remove({ _id: id}).then(data => resolve(data));
+      }));
+    }
+
+    Promise.all(promises).then(data => {
+      article.comments = [];
+      article.save().then(() => res.json(data));
+    });
+  })
+});
 
 
 
