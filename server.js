@@ -13,13 +13,12 @@ const express    = require('express'),
       // Local dependencies
       Article    = require('./models/Article.js'),
       Comment    = require('./models/Comment.js'),
-      localVars  = require('./mongodb_uri.json'),
 
       // Const vars
       app    = express(),
       hbs    = exphbs.create({ defaultLayout: 'main', extname: '.hbs' }),
       PORT   = process.env.PORT || 3000,
-      DB_URI = process.env.MONGODB_URI || localVars.LOCAL_URI;
+      DB_URI = process.env.MONGODB_URI || require('./mongodb_uri.json').LOCAL_URI;
 
 // Handlebars init
 app.engine('.hbs', hbs.engine);
