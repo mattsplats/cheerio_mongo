@@ -11,8 +11,8 @@ const express    = require('express'),
       rp         = require('request-promise'),
 
       // Local dependencies
-      Note       = require('./models/Note.js'),
       Article    = require('./models/Article.js'),
+      Comment    = require('./models/Comment.js'),
       localVars  = require('./mongodb_uri.json'),
 
       // Const vars
@@ -56,42 +56,58 @@ db.once('open', function () {
 // Routes
 app.get('/', (req, res) => {
   rp('https://news.ycombinator.com/').then(html => {
-    const $            = cheerio.load(html),
-          date = new Date().toISOString(),
-          promiseChain = [];
+    const $ = cheerio.load(html),
+          promises = [];
 
     $("td.title").each(function(i, element) {
       const link = $(element).find("a").attr("href");
       
       if (link) {
-        promiseChain.push(new Promise((resolve, reject) => {
+        // Push new promise to promises
+        promises.push(new Promise((resolve, reject) => {
           Article.update(
-            { link: link },   // where link exists,
-            { $set:           // replace fields
+            { link: link },   // if link exists,
+            { $setOnInsert:   // do not replace fields
               {
                 title: 'Test',
-                link: link,
-                date: date
+                link: link
               }                 
             },
-            { upsert: true }
-          ).then(article => resolve(article));
+            {
+              upsert: true,
+              setDefaultsOnInsert: true
+            }
+          ).then(article => 
+            resolve(article)
+          );
         }));
       };
     });
 
-    Note.find({}).then(comments => {
-      Promise.all(promiseChain).then(articles => res.render('index', {articles: articles, comments: comments}));
-    });
+    // When all updates are resolved, continue
+    Promise.all(promises).then(() => 
+      Article.find({}).populate('comments').exec((err, docs) => {
+        console.log(docs[0]);
+        res.render('index', {article: docs[0]})
+      })
+    );
   });
 });
 
-app.post('/', (req, res) =>
-  Note.create({comment: req.body.comment}).then(comment => res.json(comment))
-);
+app.post('/', (req, res) => {
+  Comment.create({comment: req.body.comment}).then(comment => {
+    console.log(comment);
+    Article.findOneAndUpdate(
+      { _id: '584b472d96b3a0f2f41cd440' },
+      { $push: { "comments": comment._id } }
+    ).then(() => 
+      res.json(comment)
+    )
+  })
+});
 
 app.delete('/', (req, res) => 
-  Note.remove({}).then(data => res.json(data))
+  Comment.remove({}).then(data => res.json(data))
 );
 
 

@@ -3,7 +3,7 @@
 const mongoose = require("mongoose"),
       Schema   = mongoose.Schema;
 
-const NoteSchema = new Schema({
+const CommentSchema = new Schema({
   /*title: {
     type: String
   },*/
@@ -12,4 +12,4 @@ const NoteSchema = new Schema({
   }
 });
 
-module.exports = mongoose.model("Note", NoteSchema);
+module.exports = mongoose.model("Comment", CommentSchema);

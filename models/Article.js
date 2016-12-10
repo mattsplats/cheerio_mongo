@@ -16,10 +16,10 @@ const ArticleSchema = new Schema({
     type: Date,
     default: Date.now
   },
-  note: {
+  comments: [{
     type: Schema.Types.ObjectId,
-    ref: "Note"
-  }
+    ref: "Comment"
+  }]
 });
 
 module.exports = mongoose.model("Article", ArticleSchema);

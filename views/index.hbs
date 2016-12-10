@@ -13,9 +13,7 @@
 			</div>
 
 			<ul id="list" class="list-group">
-			{{#each articles}}
-				<a href={{link}}>Link {{@index}}</a><br/>
-			{{/each}}
+				<a href={{article.link}}>Link!</a><br/>
 			</ul>
 		</div> <!-- End col -->
 
@@ -24,7 +22,7 @@
 				<h2>Comments:</h2>
 			</div>
 			<div id="comments">
-			{{#each comments}}
+			{{#each article.comments}}
 				{{comment}}<br/>
 			{{/each}}
 			</div>
